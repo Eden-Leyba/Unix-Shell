@@ -64,8 +64,6 @@ void freeProcessList(process* process_list) {
     while (process_list != NULL) {
         tmp = process_list;
         process_list = process_list->next;
-        // if(tmp->cmd != NULL)
-        //     freeCmdLines(tmp->cmd);
         free(tmp);
     }
 
@@ -94,8 +92,7 @@ int addToCmdArray(cmdLine* cmd){
 void freeCmdAddresses(cmdLine** addresses, int len){
     for (int i = 0; i < cmdSize; i++){
         if(parsedCmdAddresses[i]) 
-            freeCmdLines((cmdLine*)parsedCmdAddresses[i]);
-        
+            freeCmdLines((cmdLine*)parsedCmdAddresses[i]);  
     }
     free(addresses);
 }
@@ -293,13 +290,13 @@ void executeHistory(int index) {
     if ( strcmp(parsedCmd->arguments[0],"history") == 0 ) {
         printHistory();
     }
-    // else if (strcmp(parsedCmd->arguments[0], "sleep") == 0){
-    //     if (kill(atoi(parsedCmd->arguments[1]), SIGTSTP) == -1){
-    //         perror("Error: sleep operation failed");
-    //     } else {
-    //         updateProcessStatus(process_list, atoi(parsedCmd->arguments[1]), SUSPENDED);
-    //     }
-    // }
+    else if (strcmp(parsedCmd->arguments[0], "sleep") == 0){
+        if (kill(atoi(parsedCmd->arguments[1]), SIGTSTP) == -1){
+            perror("Error: sleep operation failed");
+        } else {
+            updateProcessStatus(process_list, atoi(parsedCmd->arguments[1]), SUSPENDED);
+        }
+    }
     else if (strcmp(parsedCmd->arguments[0], "procs") == 0){
         printProcessList(&process_list);
     }
@@ -325,8 +322,6 @@ void executeHistory(int index) {
     else{
         execute(parsedCmd);
     }
-
-    // freeCmdLines(parsedCmd);
 }
 
 int main(int argc, char **argv){
@@ -361,8 +356,6 @@ int main(int argc, char **argv){
             addToCmdArray(pCmdLine);
         
         if (strcmp(pCmdLine->arguments[0], "quit") == 0){
-            // freeCmdLines(pCmdLine);
-            
             break;
         }
         else if ( strcmp(pCmdLine->arguments[0],"history") == 0 ){
@@ -386,13 +379,13 @@ int main(int argc, char **argv){
             executeHistory(index - 1);
             dontIncludeInHistory = 1;
         }
-        // else if (strcmp(pCmdLine->arguments[0], "sleep") == 0){
-        //     if (kill(atoi(pCmdLine->arguments[1]), SIGTSTP) == -1){
-        //         perror("Error: sleep operation failed");
-        //     } else {
-        //         updateProcessStatus(process_list, atoi(pCmdLine->arguments[1]), SUSPENDED);
-        //     }
-        // }
+        else if (strcmp(pCmdLine->arguments[0], "sleep") == 0){
+            if (kill(atoi(pCmdLine->arguments[1]), SIGTSTP) == -1){
+                perror("Error: sleep operation failed");
+            } else {
+                updateProcessStatus(process_list, atoi(pCmdLine->arguments[1]), SUSPENDED);
+            }
+        }
         else if (strcmp(pCmdLine->arguments[0], "procs") == 0){
             printProcessList(&process_list);
         }
@@ -417,11 +410,7 @@ int main(int argc, char **argv){
         }
         else{
             execute(pCmdLine);
-            // freeCmdLine = 0;
         }
-        // if(freeCmdLine){
-        //     freeCmdLines(pCmdLine);
-        // }
         if(!dontIncludeInHistory){
             strncpy(history[newest], line , MAX_BUF);
             newest = (newest + 1) % HISTLEN;

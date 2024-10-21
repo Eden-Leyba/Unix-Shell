@@ -1,0 +1,7 @@
+#Ignore compiled files
+*.o
+*.out
+
+#Ignore zip files
+*.zip
+*.bz
