@@ -4,4 +4,5 @@
 
 #Ignore zip files
 *.zip
-*.bz
+*.bz2
+
